@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ApcuController extends Controller
 {
-    const APCU_SRV = 'app.apcu';
+    const APCU_SRV = 'apcubundle.apcu';
     const MEM_NUM_SEG = 'num_seg';
     const MEM_SEG_SIZE = 'seg_size';
     const MEM_MEM_SIZE = 'mem_size';
@@ -115,7 +115,7 @@ class ApcuController extends Controller
                 'apcversion' => phpversion('apcu'),
                 'phpversion' => phpversion(),
                 'iniSettings' => $apcu->getIniSettings(),
-                ApiController::BASE_DIR => dirname($this->getParameter(ApiController::ROOT_DIR).'/..')
+                'base_dir' => dirname($this->getParameter('kernel.root_dir') . '/..')
             ]
         );
     }
@@ -151,7 +151,7 @@ class ApcuController extends Controller
                 'page' => $page,
                 'route' => $request->get('_route'),
                 'routeParams' => $request->query->all(),
-                ApiController::BASE_DIR => dirname($this->getParameter(ApiController::ROOT_DIR).'/..'),
+                'base_dir' => dirname($this->getParameter('kernel.root_dir') . '/..')
             ]
         );
     }
@@ -198,7 +198,7 @@ class ApcuController extends Controller
                 'currentVersion' => $currentVersion,
                 'lastVersion' => $lastVersion,
                 'changelog' => $changelog,
-                ApiController::BASE_DIR => dirname($this->getParameter(ApiController::ROOT_DIR).'/..'),
+                'base_dir' => dirname($this->getParameter('kernel.root_dir') . '/..')
             ]
         );
     }

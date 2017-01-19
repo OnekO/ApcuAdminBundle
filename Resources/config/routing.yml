@@ -1,2 +1,4 @@
-Apcu:
-    resource: "@ApcuAdminBundle/Controller/ApcuController.php"
+oneko.apcu.default:
+    resource: Oneko\ApcuAdminBundle\Controller\ApcuController
+    prefix:   /apcu
+    type:     annotation

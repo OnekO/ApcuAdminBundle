@@ -2,3 +2,7 @@ services:
     apcubundle.apcu:
         class: Oneko\ApcuAdminBundle\Lib\Apcu
         arguments: ['@request_stack']
+
+    apcubundle.image:
+        class: Oneko\ApcuAdminBundle\Lib\Image
+        arguments: ['@apcubundle.apcu']

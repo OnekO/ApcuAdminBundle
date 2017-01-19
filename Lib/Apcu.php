@@ -19,6 +19,18 @@ class Apcu
     const OB_USER_CACHE = 2;
     const OB_VERSION_CHECK = 3;
 
+    const MEM_NUM_SEG = 'num_seg';
+    const MEM_SEG_SIZE = 'seg_size';
+    const MEM_MEM_SIZE = 'mem_size';
+    const MEM_AVAIL_MEM = 'avail_mem';
+    const MEM_BLOCK_LISTS = 'block_lists';
+
+    const CACHE_NUM_HITS = 'num_hits';
+    const CACHE_NUM_MISSES = 'num_misses';
+    const CACHE_START_TIME = 'start_time';
+    const MEM_BLOCK_OFFSET = 'offset';
+    const MEM_BLOCK_SIZE = 'size';
+
     // check validity of input variables
     protected $vardom = [
         'OB' => '/^\d+$/',           // operational mode switch
@@ -500,9 +512,8 @@ class Apcu
     /**
      * @return string
      */
-    protected function getFragmentation()
+    public function getFragmentation(Apcu $apcu)
     {
-        $apcu = $this->get(static::APCU_SRV);
         // Fragementation: (freeseg - 1) / total_seg
         $nseg = $freeseg = $fragsize = $freetotal = 0;
         for ($i = 0; $i < $apcu->getMem(static::MEM_NUM_SEG); $i++) {

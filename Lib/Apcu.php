@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace ApcuAdminBundle\Lib;
+namespace Oneko\ApcuAdminBundle\Lib;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 

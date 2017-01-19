@@ -1,8 +1,8 @@
 <?php
 declare(strict_types = 1);
-namespace ApcuAdminBundle\Controller;
+namespace Oneko\ApcuAdminBundle\Controller;
 
-use ApcuAdminBundle\Lib\Apcu;
+use Oneko\ApcuAdminBundle\Lib\Apcu;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

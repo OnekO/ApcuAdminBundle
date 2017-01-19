@@ -1,4 +1,4 @@
 services:
     apcubundle.apcu:
-        class: ApcuAdminBundle\Lib\Apcu
+        class: Oneko\ApcuAdminBundle\Lib\Apcu
         arguments: ['@request_stack']

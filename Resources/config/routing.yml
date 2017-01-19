@@ -1,2 +1,2 @@
 Apcu:
-    resource: @ApcuAdminBundle/Controller/ApcuController
+    resource: "@ApcuAdminBundle/Controller/ApcuController.php"

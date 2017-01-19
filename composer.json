@@ -1,0 +1,30 @@
+{
+    "name": "oneko/apcuadmin-bundle",
+    "license": "LGPL-3.0",
+    "description": "APCu administration",
+    "type": "symfony-bundle",
+    "version": "1.0.0",
+    "homepage": "http://www.github.com/oneko/ApcuAdminBundle",
+    "require": {
+        "php": ">=7.0.0",
+        "symfony/symfony": "3.2.*",
+        "roave/security-advisories": "dev-master"
+    },
+    "authors": [
+        {
+            "name": "OnekO",
+            "email": "onekorama@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Oneko\\ApcuAdminBundle\\": ""
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "Tests/"
+        }
+    },
+    "prefer-stable": true
+}

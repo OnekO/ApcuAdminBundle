@@ -1,0 +1,71 @@
+{% extends 'default/index.html.twig' %}
+{% block title %}APCU{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="row m-t-5">
+            <div class="info">
+                <h2>APCu Version Information</h2>
+                <table cellspacing=0>
+                    <tbody>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        {% if currentVersion == 0 %}
+                        <tr class="td-last center"><td>Unable to fetch version information.</td></tr>
+                        {% else %}
+                            <tr class="tr-0 center">
+                                <td>
+                                {% if lastVersion == currentVersion %}
+                                    <div class="ok">
+                                        You are running the latest version of APCu ({{ lastVersion }})
+                                    </div>
+                                {% else %}
+                                    <div class="failed">
+                                        You are running an older version of APCu ({{ currentVersion }}),
+                                        newer version {{ lastVersion }} is available at
+                                        <a href="http://pecl.php.net/package/APCu/{{ lastVersion }}">
+                                            http://pecl.php.net/package/APCu/{{ lastVersion }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                                </td>
+                            </tr>
+                            <tr class="tr-0">
+                                <td>
+                                    <h3>Change Log:</h3><br/>
+                                    {% for change in changelog %}
+                                    <b>
+                                        <a href="http://pecl.php.net/package/APCu/{{ change.version }}">
+                                            {{ change.textVersion }}
+                                        </a>
+                                    </b>
+                                    <br>
+                                    <blockquote>
+                                        {{ change.text|raw }}
+                                    </blockquote>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets filter='sass' filter='cssrewrite' filter='uglifycss'
+    'bundles/app/css/utils/apcu.scss' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+    'bundles/app/js/intranet/agenda.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

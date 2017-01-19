@@ -1,0 +1,194 @@
+{% extends 'default/index.html.twig' %}
+{% block title %}APCU{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="col-md-1"></div>
+        <div class="row m-t-5 col-md-10">
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header">
+                        General Cache Information
+                    </div>
+                    <div class="card-block">
+                        <div>
+                            <div class="card-text col-xs-6">APCu Version</div>
+                            <div class="card-text col-xs-6">{{ apcversion }}</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">PHP Version</div>
+                            <div class="card-text col-xs-6">{{ phpversion }}</div>
+                        </div>
+                        {% if serverName is not null %}
+                            <div>
+                                <div class="card-text col-xs-6">APCu Host</div>
+                                <div class="card-text col-xs-6">{{ serverSoftware }} {{ host }}</div>
+                            </div>
+                        {% endif %}
+                        {% if serverSoftware is not null %}
+                            <div>
+                                <div class="col-xs-6">Server Software</div>
+                                <div class="col-xs-6">{{ serverSoftware }}</div>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <div class="card-text col-xs-6">Shared memory</div>
+                            <div class="card-text col-xs-6">{{ mem.num_seg }} Segment(s) with {{ segSize }}
+                                <p class="card-text">({{ cache.memory_type }} memory)</p>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Start Time</div>
+                            <div class="card-text col-xs-6">{{ cache.start_time |date('d/m/Y H:i:s')}}</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Uptime</div>
+                            <div class="card-text col-xs-6">{{ apcu.duration(time, cache.start_time) }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        Cache Information
+                    </div>
+                    <div class="card-block">
+                        <div>
+                            <div class="card-text col-xs-6">Cached Variables</div>
+                            <div class="card-text col-xs-6">{{ cache.num_entries }} ({{ sizeVars }})</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Hits</div>
+                            <div class="card-text col-xs-6">{{ cache.num_hits }}</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Misses</div>
+                            <div class="card-text col-xs-6">{{ cache.num_misses }}</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Request Rate (hits, misses)</div>
+                            <div class="card-text col-xs-6">{{ reqRateUser }} cache requests/second</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Hit Rate</div>
+                            <div class="card-text col-xs-6">{{ hitRateUser }} cache requests/second</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Miss Rate</div>
+                            <div class="card-text col-xs-6">{{ missRateUser }} cache requests/second</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Insert Rate</div>
+                            <div class="card-text col-xs-6">{{ insertRateUser }} cache requests/second</div>
+                        </div>
+                        <div>
+                            <div class="card-text col-xs-6">Cache full count</div>
+                            <div class="card-text col-xs-6">{{ cache.expunges }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        Runtime Settings
+                    </div>
+                    <div class="card-block">
+                        {% for setting in iniSettings %}
+                            <div>
+                                <div class="card-text col-xs-6">
+                                    {{ setting[0] }}
+                                </div>
+                                <div class="card-text col-xs-6">
+                                    {{ setting[1].local_value |replace({',': '<br>'}) }}&nbsp;
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header">
+                        Host Status Diagrams
+                    </div>
+                    <div class="card-block">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="card card-block">
+                                    <h3 class="card-title">
+                                        Memory usage
+                                    </h3>
+                                    <p class="card-text">
+                                        {% if mem.num_seg > 1 or mem.num_seg == 1 and mem.block_lists[0]|length > 1 %}
+                                        <small class="text-muted">(multiple slices indicate fragments)</small>
+                                        {% endif %}
+                                    </p>
+                                    {% if apcu.graphicsAvailable %}
+                                        <img alt="Memory usage" class="img-apcu"
+                                             src="{{ url('apcu_imagen', {'IMG': 1, 'time': time}) }}">
+                                    {% endif %}
+                                    <p class="card-text">Free: {{ memFree }}</p>
+                                    <p class="card-text">Used: {{ memUsed }}</p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="card card-block">
+                                    <h3 class="card-title">Hits &amp; Misses</h3>
+                                    <p class="card-text">
+                                        {% if apcu.graphicsAvailable %}
+                                            <img alt="Hit & misses" class="img-apcu"
+                                                 src="{{ url('apcu_imagen', {'IMG': 2, 'time': time}) }}">
+                                        {% endif %}
+                                    </p>
+                                    <p class="card-text">Hits: {{ cache.num_hits }} {{ numHits }}</p>
+                                    <p class="card-text">Misses: {{ cache.num_misses }} {{ numMissed }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        Detailed Memory Usage and Fragmentation
+                    </div>
+                    <div class="card-block">
+                        <p>
+                            {% if apcu.graphicsAvailable %}
+                                <img alt="Memory usage and fragmentation" class="img-apcu"
+                                     src="{{ url('apcu_imagen', {'IMG': 3, 'time': time}) }}">
+                            {% endif %}
+                            </br>Fragmentation: {{ frag }}
+                        </p>
+                        <p>
+                            {% if mem.adist is defined %}
+                                {% for key,adist in mem.adist %}
+                                    {% if key == 0 %}
+                                        {% set range = 1 %}
+                                    {% else %}
+                                        {% set range = (key ** 2) - (((key + 1)** 2) - 1) %}
+                                    {% endif %}
+                                    {{ range }} :: {{ key }}
+                                {% endfor %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets filter='sass' filter='cssrewrite' filter='uglifycss'
+    'bundles/app/css/utils/apcu.scss' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {#{% javascripts filter='uglifyjs2'#}
+    {#'bundles/app/js/intranet/agenda.js' %}#}
+    {#<script src="{{ asset_url }}"></script>#}
+    {#{% endjavascripts %}#}
+{% endblock %}

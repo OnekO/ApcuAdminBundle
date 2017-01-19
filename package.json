@@ -1,0 +1,33 @@
+{
+  "name": "feng-bundle",
+  "version": "1.0.0",
+  "description": "Gestión de datos de Feng Office",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.9.0",
+    "eslint": "^2.13.1",
+    "eslint-config-google": "^0.6.0",
+    "grunt": "^1.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://gitlab-php.dinahosting.lan/dinahosting/DhFengBundle.git"
+  },
+  "keywords": [
+    "feng"
+  ],
+  "author": "Karlos presumido <kpresumido@dinahosting.com>",
+  "license": "MIT"
+}

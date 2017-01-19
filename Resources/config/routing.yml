@@ -1,0 +1,2 @@
+Apcu:
+    resource: @ApcuAdminBundle/Controller/ApcuController

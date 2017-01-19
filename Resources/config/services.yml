@@ -1,0 +1,4 @@
+services:
+    apcubundle.apcu:
+        class: ApcuAdminBundle\Lib\Apcu
+        arguments: ['@request_stack']

@@ -1,0 +1,144 @@
+{% extends 'default/index.html.twig' %}
+{% import "@App/macros/lists.html.twig" as lists %}
+{% block title %}APCU{% endblock %}
+{% block body %}
+    <div class="container-fluid">
+        <div class="row m-t-5">
+            <div class="sorting">
+                <form class="form-inline">
+                    <label class="form-label">Scope:
+                        <select name="scope" class="form-control">
+                            {% for key, name in scopes %}
+                                <option value="{{ key }}"{{ scope == key ? ' selected' : '' }}>
+                                    {{ name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <select name="count" class="form-control">
+                        {% for key, sort in counts %}
+                            <option value="{{ key }}"{{ currentCount == key ? ' selected' : '' }}>
+                                {{ sort }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <label class="form-label">
+                        Search:
+                        <input class="form-control" name="search" value="{{ search }}" type="text" size="25">
+                    </label>
+                    <input class="btn btn-primary" type=submit value="GO!">
+                </form>
+            </div>
+
+            <div class="info">
+                <table class="table table-striped table-bordered table-hover table-sm">
+                    <thead class="table-active">
+                        <tr>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), routeParams|merge({'order': 'user', 'dir': direction})) }}">
+                                    User Entry Label
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), routeParams|merge({'order': 'hits', 'dir': direction})) }}">
+                                    Hits
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), {'order': 'size', 'dir': direction}) }}">
+                                    Size
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), {'order': 'acccesed', 'dir': direction})}}">
+                                    Last accessed
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), {'order': 'modified', 'dir': direction})}}">
+                                    Last modified
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), {'order': 'created', 'dir': direction}) }}">
+                                    Created at
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), {'order': 'timeout', 'dir': direction}) }}">
+                                    Timeout
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ path(app.request.get('_route'), {'order': 'deleted', 'dir': direction}) }}">
+                                    Deleted at
+                                </a>
+                            </th>
+                        </tr>
+                    <thead>
+                    <tbody>
+                        {% for key, entry in list|slice((page - 1)* currentCount, currentCount) %}
+                        <tr>
+                            <td>
+                                <a class="view" href="{{ url('apcu_detalle', {item: entry.info|url_encode}) }}">
+                                    {{ entry.info|e }}
+                                </a>
+                                <div class="data animated slideInDown" data-state="hidden"></div>
+                            </td>
+                            <td>{{ entry.num_hits }}</td>
+                            <td>{{ entry.mem_size }}</td>
+                            <td>{{ entry.access_time|date('d/m/Y H:i:s') }}</td>
+                            <td>{{ entry.mtime|date('d/m/Y H:i:s') }}</td>
+                            <td>{{ entry.creation_time|date('d/m/Y H:i:s') }}</td>
+                            {% if entry.ttl is defined and entry.ttl != 0 %}
+                                <td>{{ entry.ttl }} seconds</td>
+                            {% else %}
+                                <td>None</td>
+                            {% endif %}
+                            {% if entry.deletion_time is defined and entry.deletion_time != 0 %}
+                                <td>{{ entry.deletion_time|date('d/m/Y H:i:s') }}</td>
+                            {% else %}
+                                <td>
+                                    <a class="delete" href="{{ url('apcu_borrar', {item: entry.info|url_encode}) }}">
+                                        Delete Now
+                                    </a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td><h3>No data</h3></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {{ lists.paginator(
+                route,
+                page,
+                (list|length / currentCount)|round(0, 'ceil'),
+                currentCount,
+                list|length,
+                routeParams
+                ) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% stylesheets filter='sass' filter='cssrewrite' filter='uglifycss'
+    'bundles/app/css/utils/apcu.scss' %}
+    <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2'
+    'assets/vendor/json-human/src/json.human.js'
+    'bundles/app/js/apcu/UserCache.js' %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

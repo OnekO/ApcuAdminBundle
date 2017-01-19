@@ -1,7 +1,7 @@
 {
-  "name": "feng-bundle",
+  "name": "apcuadmin-bundle",
   "version": "1.0.0",
-  "description": "Gestión de datos de Feng Office",
+  "description": "APCu administration",
   "main": "index.js",
   "directories": {
     "test": "tests"
@@ -21,13 +21,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "http://gitlab-php.dinahosting.lan/dinahosting/DhFengBundle.git"
-  },
   "keywords": [
-    "feng"
+    "symfony",
+    "bundle",
+    "apcu",
+    "cache"
   ],
-  "author": "Karlos presumido <kpresumido@dinahosting.com>",
-  "license": "MIT"
+  "author": "OnekO <onekorama@gmail.com>",
+  "license": "LGPL 3"
 }

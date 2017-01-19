@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Oneko;
+namespace Oneko\ApcuAdminBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

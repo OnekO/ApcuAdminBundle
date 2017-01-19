@@ -480,4 +480,58 @@ class Apcu
 
         return $list;
     }
+
+    /**
+     * @return string
+     */
+    public function getHost()
+    {
+        $host = php_uname('n');
+        if ($host) {
+            $host = '('.$host.')';
+        }
+        if (isset($_SERVER['SERVER_ADDR'])) {
+            $host .= ' ('.$_SERVER['SERVER_ADDR'].')';
+        }
+
+        return $host;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getFragmentation()
+    {
+        $apcu = $this->get(static::APCU_SRV);
+        // Fragementation: (freeseg - 1) / total_seg
+        $nseg = $freeseg = $fragsize = $freetotal = 0;
+        for ($i = 0; $i < $apcu->getMem(static::MEM_NUM_SEG); $i++) {
+            $ptr = 0;
+            foreach ($apcu->getMem(static::MEM_BLOCK_LISTS)[$i] as $block) {
+                if ($block[static::MEM_BLOCK_OFFSET] !== $ptr) {
+                    ++$nseg;
+                }
+                $ptr = $block[static::MEM_BLOCK_OFFSET] + $block[static::MEM_BLOCK_SIZE];
+                /* Only consider blocks <5M for the fragmentation % */
+                if ($block[static::MEM_BLOCK_SIZE] < (5 * 1024 * 1024)) {
+                    $fragsize += $block[static::MEM_BLOCK_SIZE];
+                }
+                $freetotal += $block[static::MEM_BLOCK_SIZE];
+            }
+            $freeseg += count($apcu->getMem(static::MEM_BLOCK_LISTS)[$i]);
+        }
+
+        $frag = '0%';
+        if ($freeseg > 1) {
+            $frag = sprintf(
+                '%.2f%% (%s out of %s in %d fragments)',
+                ($fragsize / $freetotal) * 100,
+                $apcu->bsize($fragsize),
+                $apcu->bsize($freetotal),
+                $freeseg
+            );
+        }
+
+        return $frag;
+    }
 }

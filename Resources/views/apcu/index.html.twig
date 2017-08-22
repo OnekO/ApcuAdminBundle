@@ -9,7 +9,7 @@
                     <div class="card-header">
                         General Cache Information
                     </div>
-                    <div class="card-block">
+                    <div class="card-body">
                         <div>
                             <div class="card-text col-xs-6">APCu Version</div>
                             <div class="card-text col-xs-6">{{ apcversion }}</div>
@@ -51,7 +51,7 @@
                     <div class="card-header">
                         Cache Information
                     </div>
-                    <div class="card-block">
+                    <div class="card-body">
                         <div>
                             <div class="card-text col-xs-6">Cached Variables</div>
                             <div class="card-text col-xs-6">{{ cache.num_entries }} ({{ sizeVars }})</div>
@@ -91,7 +91,7 @@
                     <div class="card-header">
                         Runtime Settings
                     </div>
-                    <div class="card-block">
+                    <div class="card-body">
                         {% for setting in iniSettings %}
                             <div>
                                 <div class="card-text col-xs-6">
@@ -110,10 +110,10 @@
                     <div class="card-header">
                         Host Status Diagrams
                     </div>
-                    <div class="card-block">
+                    <div class="card-body">
                         <div class="row">
                             <div class="col-sm-6">
-                                <div class="card card-block">
+                                <div class="card card-body">
                                     <h3 class="card-title">
                                         Memory usage
                                     </h3>
@@ -131,7 +131,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-6">
-                                <div class="card card-block">
+                                <div class="card card-body">
                                     <h3 class="card-title">Hits &amp; Misses</h3>
                                     <p class="card-text">
                                         {% if apcu.graphicsAvailable %}
@@ -150,7 +150,7 @@
                     <div class="card-header">
                         Detailed Memory Usage and Fragmentation
                     </div>
-                    <div class="card-block">
+                    <div class="card-body">
                         <p>
                             {% if apcu.graphicsAvailable %}
                                 <img alt="Memory usage and fragmentation" class="img-apcu"

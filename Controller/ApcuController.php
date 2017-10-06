@@ -16,75 +16,65 @@ use Symfony\Component\Routing\Annotation\Route;
 class ApcuController extends Controller
 {
     const APCU_SRV = 'apcubundle.apcu';
-    const MEM_NUM_SEG = 'num_seg';
-    const MEM_SEG_SIZE = 'seg_size';
-    const MEM_MEM_SIZE = 'mem_size';
-    const MEM_AVAIL_MEM = 'avail_mem';
-    const MEM_BLOCK_LISTS = 'block_lists';
-
-    const CACHE_NUM_HITS = 'num_hits';
-    const CACHE_NUM_MISSES = 'num_misses';
-    const CACHE_START_TIME = 'start_time';
-    const MEM_BLOCK_OFFSET = 'offset';
-    const MEM_BLOCK_SIZE = 'size';
+    const IMAGE_SRV = 'apcubundle.image';
 
     /**
-     * @Route("/apcu", name="apcu_index")
+     * @Route("/", name="apcu_index")
      * @return Response
      */
     public function indexAction():Response
     {
         $time = time();
         $apcu = $this->get(static::APCU_SRV);
-        $mem_size = $apcu->getMem(static::MEM_NUM_SEG) * $apcu->getMem(static::MEM_SEG_SIZE);
-        $mem_avail = $apcu->getMem(static::MEM_AVAIL_MEM);
+        $mem_size = $apcu->getMem(Apcu::MEM_NUM_SEG) * $apcu->getMem(Apcu::MEM_SEG_SIZE);
+        $mem_avail = $apcu->getMem(Apcu::MEM_AVAIL_MEM);
         $mem_used = $mem_size - $mem_avail;
-        $segSize = $apcu->bsize($apcu->getMem(static::MEM_SEG_SIZE));
+        $segSize = $apcu->bsize($apcu->getMem(Apcu::MEM_SEG_SIZE));
         $reqRateUser = sprintf(
             '%.2f',
-            $apcu->getCache(static::CACHE_NUM_HITS)
-                ? (($apcu->getCache(static::CACHE_NUM_HITS)
-                    + $apcu->getCache(static::CACHE_NUM_MISSES)) / ($time - $apcu->getCache(static::CACHE_START_TIME)))
+            $apcu->getCache(Apcu::CACHE_NUM_HITS)
+                ? (($apcu->getCache(Apcu::CACHE_NUM_HITS)
+                    + $apcu->getCache(Apcu::CACHE_NUM_MISSES)) / ($time - $apcu->getCache(Apcu::CACHE_START_TIME)))
                 : 0
         );
         $hitRateUser = sprintf(
             '%.2f',
-            $apcu->getCache(static::CACHE_NUM_HITS)
-                ? ($apcu->getCache(static::CACHE_NUM_HITS) / ($time - $apcu->getCache(static::CACHE_START_TIME)))
+            $apcu->getCache(Apcu::CACHE_NUM_HITS)
+                ? ($apcu->getCache(Apcu::CACHE_NUM_HITS) / ($time - $apcu->getCache(Apcu::CACHE_START_TIME)))
                 : 0
         );
         $missRateUser = sprintf(
             '%.2f',
-            $apcu->getCache(static::CACHE_NUM_MISSES)
-                ? ($apcu->getCache(static::CACHE_NUM_MISSES) / ($time - $apcu->getCache(static::CACHE_START_TIME)))
+            $apcu->getCache(Apcu::CACHE_NUM_MISSES)
+                ? ($apcu->getCache(Apcu::CACHE_NUM_MISSES) / ($time - $apcu->getCache(Apcu::CACHE_START_TIME)))
                 : 0
         );
         $insertRateUser = sprintf(
             '%.2f',
             $apcu->getCache('num_inserts')
-                ? ($apcu->getCache('num_inserts') / ($time - $apcu->getCache(static::CACHE_START_TIME)))
+                ? ($apcu->getCache('num_inserts') / ($time - $apcu->getCache(Apcu::CACHE_START_TIME)))
                 : 0
         );
         $memFree = $apcu->bsize($mem_avail).sprintf(' (%.1f%%)', $mem_avail * 100 / $mem_size);
         $memUsed = $apcu->bsize($mem_used).sprintf(' (%.1f%%)', $mem_used * 100 / $mem_size);
-        $totalHits = $apcu->getCache(static::CACHE_NUM_HITS) + $apcu->getCache(static::CACHE_NUM_MISSES);
+        $totalHits = $apcu->getCache(Apcu::CACHE_NUM_HITS) + $apcu->getCache(Apcu::CACHE_NUM_MISSES);
         $numHits = '(0%)';
         $numMissed = '(0%)';
         if ($totalHits > 0) {
             $numHits = sprintf(
                 ' (%.1f%%)',
-                $apcu->getCache(static::CACHE_NUM_HITS) * 100 / $totalHits
+                $apcu->getCache(Apcu::CACHE_NUM_HITS) * 100 / $totalHits
             );
             $numMissed = sprintf(
                 ' (%.1f%%)',
-                $apcu->getCache(static::CACHE_NUM_MISSES) * 100 / ($apcu->getCache(static::CACHE_NUM_HITS) +
-                    $apcu->getCache(static::CACHE_NUM_MISSES))
+                $apcu->getCache(Apcu::CACHE_NUM_MISSES) * 100 / ($apcu->getCache(Apcu::CACHE_NUM_HITS) +
+                    $apcu->getCache(Apcu::CACHE_NUM_MISSES))
             );
         }
 
-        $sizeVars = $apcu->bsize($apcu->getCache(static::MEM_MEM_SIZE));
+        $sizeVars = $apcu->bsize($apcu->getCache(Apcu::MEM_MEM_SIZE));
 
-        $frag = $this->getFragmentation();
+        $frag = $apcu->getFragmentation($apcu);
 
         $serverName = $_SERVER['SERVER_NAME'];
         $serverSoftware = $_SERVER['SERVER_SOFTWARE'];
@@ -92,7 +82,7 @@ class ApcuController extends Controller
 
 
         return $this->render(
-            '@App/apcu/index.html.twig',
+            '@ApcuAdmin/apcu/index.html.twig',
             [
                 'apcu' => $apcu,
                 'host' => $apcu->getHost(),
@@ -121,7 +111,7 @@ class ApcuController extends Controller
     }
 
     /**
-     * @Route("/apcu/user-cache", name="apcu_user_cache")
+     * @Route("/user-cache", name="apcu_user_cache")
      * @return Response
      */
     public function userCacheAction():Response
@@ -137,7 +127,7 @@ class ApcuController extends Controller
         $search = empty($request->get('search')) ? null : $request->get('search');
 
         return $this->render(
-            '@App/apcu/user_cache.html.twig',
+            '@ApcuAdmin/apcu/user_cache.html.twig',
             [
                 'apcu' => $apcu,
                 'scopes' => Apcu::SCOPES,
@@ -157,7 +147,7 @@ class ApcuController extends Controller
     }
 
     /**
-     * @Route("/apcu/version", name="apcu_version")
+     * @Route("/version", name="apcu_version")
      * @return Response
      */
     public function versionAction():Response
@@ -193,7 +183,7 @@ class ApcuController extends Controller
             }
         }
         return $this->render(
-            '@App/apcu/version.html.twig',
+            '@ApcuAdmin/apcu/version.html.twig',
             [
                 'currentVersion' => $currentVersion,
                 'lastVersion' => $lastVersion,
@@ -204,7 +194,7 @@ class ApcuController extends Controller
     }
 
     /**
-     * @Route("/apcu/clean", name="apcu_clean")
+     * @Route("/clean", name="apcu_clean")
      * @return Response
      */
     public function cleanAction():Response
@@ -215,7 +205,7 @@ class ApcuController extends Controller
     }
 
     /**
-     * @Route("/apcu/imagen", name="apcu_imagen")
+     * @Route("/imagen", name="apcu_imagen")
      * @return Response
      */
     public function imagenAction():Response
@@ -223,16 +213,16 @@ class ApcuController extends Controller
         $request = $this->get('request_stack')->getCurrentRequest();
         switch ($request->get('IMG')) {
             case 1:
-                $imagen = $this->imagen1();
+                $imagen = $this->get(static::IMAGE_SRV)->imagen1();
                 break;
             case 2:
-                $imagen = $this->imagen2();
+                $imagen = $this->get(static::IMAGE_SRV)->imagen2();
                 break;
             case 3:
-                $imagen = $this->imagen3();
+                $imagen = $this->get(static::IMAGE_SRV)->imagen3();
                 break;
             case 4:
-                $imagen = $this->imagen4();
+                $imagen = $this->get(static::IMAGE_SRV)->imagen4();
                 break;
             default:
                 $imagen = null;
@@ -253,7 +243,7 @@ class ApcuController extends Controller
     }
 
     /**
-     * @Route("/apcu/detalle/{item}", name="apcu_detalle")
+     * @Route("/detalle/{item}", name="apcu_detalle")
      * @return Response
      */
     public function detalleAction(string $item):Response
@@ -263,7 +253,7 @@ class ApcuController extends Controller
     }
 
     /**
-     * @Route("/apcu/borrar/{item}", name="apcu_borrar")
+     * @Route("/borrar/{item}", name="apcu_borrar")
      * @return Response
      */
     public function borrarAction(string $item):Response

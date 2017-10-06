@@ -7,7 +7,6 @@
     "homepage": "http://www.github.com/oneko/ApcuAdminBundle",
     "require": {
         "php": ">=7.0.0",
-        "symfony/symfony": "3.3.*"
     },
     "authors": [
         {
